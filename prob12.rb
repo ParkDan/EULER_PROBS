@@ -14,9 +14,10 @@
 # We can see that 28 is the first triangle number to have over five divisors.
 
 # What is the value of the first triangle number to have over five hundred divisors?
+# brute force method.. too inefficient
 def divisor(num)
-  factor=0
-  (1..num).each do |n|
+  factor=1
+  (1..num/2).each do |n|
     if num%n==0
       factor+=1
     end
@@ -24,15 +25,42 @@ def divisor(num)
   factor
 end
 
-  t=Time.now
-  triangle_array=[1]
-  n=2
-while divisor(triangle_array.last)<500
-  triangle_array<<(n+triangle_array.last)
-  n+=1
-  # puts divisor(triangle_array.last)
-  # puts "___#{triangle_array.last}"
+def prime_array(num)
+  array=(2..num).to_a
+  array=(2..num).collect { |i| i}
+  (2..num).each do |x|
+    array=array.reject { |i|  i % x == 0 && i!=x }
+  end
+  array
+end
+@primes=prime_array(1000)
+
+# trick for finding factors using prime factorization tree
+def divisor2(num)
+  count_array=[]
+  divisor=1
+  @primes.each do |prime|
+    count=1
+    break if prime>num
+    while(num%prime==0)
+      num=num/prime
+      count+=1
+    end
+    count_array<<count
+  end
+  count_array.each{|c| divisor=divisor*c}
+  divisor
 end
 
-puts triangle_array.last
+t=Time.now
+last=1
+n=2
+while divisor2(last)<500
+  last+=n
+  n+=1
+end
+puts last
 puts Time.now-t
+
+#76576500
+
